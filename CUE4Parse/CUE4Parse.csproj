@@ -36,8 +36,10 @@
 
   <ItemGroup>
     <None Remove="Resources\ACE7Key.bin" />
+    <None Remove="UE4\Assets\Exports\Animation\UAnimCurveMetaData.cs.UNUSED" />
     <EmbeddedResource Include="Resources\ACE7Key.bin" />
     <None Remove="Resources\PUBGNameHashMap.json" />
+    <Compile Include="UE4\Assets\Exports\Animation\UAnimCurveMetaData.cs.UNUSED" />
     <EmbeddedResource Include="Resources\PUBGNameHashMap.json" />
   </ItemGroup>
 

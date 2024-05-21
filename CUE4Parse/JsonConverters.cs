@@ -39,6 +39,7 @@ using CUE4Parse.UE4.Wwise;
 using CUE4Parse.UE4.Wwise.Objects;
 using CUE4Parse.Utils;
 using Newtonsoft.Json;
+using static CUE4Parse.UE4.Objects.UObject.FExpressionObject;
 #pragma warning disable CS8765
 
 namespace CUE4Parse;
@@ -2725,6 +2726,64 @@ public class FSmartNameConverter : JsonConverter<FSmartName>
     }
 
     public override FSmartName ReadJson(JsonReader reader, Type objectType, FSmartName existingValue, bool hasExistingValue,
+        JsonSerializer serializer)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public class EOperatorConverter : JsonConverter<EOperator>
+{
+    public override void WriteJson(JsonWriter writer, EOperator value, JsonSerializer serializer)
+    {
+        serializer.Serialize(writer, value.ToString());
+    }
+
+    public override EOperator ReadJson(JsonReader reader, Type objectType, EOperator existingValue, bool hasExistingValue,
+        JsonSerializer serializer)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public class FFunctionRefConverter : JsonConverter<FFunctionRef>
+{
+    // FBuiltinFunctions() in ExpressionEvaluater.cpp
+    static string[] REF_TO_STR = [
+        "clamp(value, min, max)",
+        "min(a, b)",
+        "max(a, b)",
+        "abs(value)",
+        "round(value)",
+        "ceil(value)",
+        "floor(value)",
+        "sin(value)",
+        "cos(value)",
+        "tan(value)",
+        "asin(value)",
+        "acos(value)",
+        "atan(value)",
+        "sqrt(value)",
+        "isqrt(value)",
+        "log(value)",
+        "exp(value)",
+        "pi()",
+        "e()",
+        "undef()",
+    ];
+
+    public override void WriteJson(JsonWriter writer, FFunctionRef value, JsonSerializer serializer)
+    {
+        if (value.Index > REF_TO_STR.Length)
+        {
+            serializer.Serialize(writer, $"<unknown func {value.Index}>");
+        } else
+        {
+            serializer.Serialize(writer, REF_TO_STR[value.Index]);
+        }
+    }
+
+    public override FFunctionRef ReadJson(JsonReader reader, Type objectType, FFunctionRef existingValue, bool hasExistingValue,
         JsonSerializer serializer)
     {
         throw new NotImplementedException();
