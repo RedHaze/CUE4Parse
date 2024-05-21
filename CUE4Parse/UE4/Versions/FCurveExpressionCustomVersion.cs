@@ -7,13 +7,9 @@ namespace CUE4Parse.UE4.Versions
     {
         public enum Type
         {
-            // Before any version changes were made in niagara
             BeforeCustomVersionWasAdded = 0,
-
-            // Serialized expressions
             SerializedExpressions,
             ExpressionDataInSharedObject,
-
             VersionPlusOne,
             LatestVersion = VersionPlusOne - 1,
         }
