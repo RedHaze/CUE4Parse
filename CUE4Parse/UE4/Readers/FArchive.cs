@@ -260,7 +260,7 @@ namespace CUE4Parse.UE4.Readers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string ReadString()
+        public virtual string ReadString()
         {
             var length = Read7BitEncodedInt();
             if (length <= 0)
