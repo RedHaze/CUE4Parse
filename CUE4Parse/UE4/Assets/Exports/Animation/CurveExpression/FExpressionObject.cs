@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CUE4Parse.UE4.Exceptions;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Readers;
+using Newtonsoft.Json;
 
 namespace CUE4Parse.UE4.Assets.Exports.Animation.CurveExpression;
 
@@ -49,6 +50,7 @@ public class FExpressionObject
     }
 }
 
+[JsonConverter(typeof(EOperatorConverter))]
 public enum EOperator : int
 {
     Negate,				// Negation operator.
@@ -61,6 +63,7 @@ public enum EOperator : int
     FloorDivide,    	// Divide and round the result down
 }
 
+[JsonConverter(typeof(FFunctionRefConverter))]
 public struct FFunctionRef
 {
     public int Index;

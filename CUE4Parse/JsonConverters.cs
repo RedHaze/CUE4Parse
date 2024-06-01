@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CUE4Parse.GameTypes.FF7.Objects;
 using CUE4Parse.GameTypes.FN.Objects;
 using CUE4Parse.UE4.AssetRegistry;
@@ -8,6 +9,7 @@ using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Animation.ACL;
+using CUE4Parse.UE4.Assets.Exports.Animation.CurveExpression;
 using CUE4Parse.UE4.Assets.Exports.BuildData;
 using CUE4Parse.UE4.Assets.Exports.Component.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Engine.Font;
@@ -39,7 +41,7 @@ using CUE4Parse.UE4.Wwise;
 using CUE4Parse.UE4.Wwise.Objects;
 using CUE4Parse.Utils;
 using Newtonsoft.Json;
-using static CUE4Parse.UE4.Objects.UObject.FExpressionObject;
+using static CUE4Parse.UE4.Assets.Exports.Animation.CurveExpression.FExpressionObject;
 #pragma warning disable CS8765
 
 namespace CUE4Parse;
@@ -2748,38 +2750,15 @@ public class EOperatorConverter : JsonConverter<EOperator>
 
 public class FFunctionRefConverter : JsonConverter<FFunctionRef>
 {
-    // FBuiltinFunctions() in ExpressionEvaluater.cpp
-    static string[] REF_TO_STR = [
-        "clamp(value, min, max)",
-        "min(a, b)",
-        "max(a, b)",
-        "abs(value)",
-        "round(value)",
-        "ceil(value)",
-        "floor(value)",
-        "sin(value)",
-        "cos(value)",
-        "tan(value)",
-        "asin(value)",
-        "acos(value)",
-        "atan(value)",
-        "sqrt(value)",
-        "isqrt(value)",
-        "log(value)",
-        "exp(value)",
-        "pi()",
-        "e()",
-        "undef()",
-    ];
-
     public override void WriteJson(JsonWriter writer, FFunctionRef value, JsonSerializer serializer)
     {
-        if (value.Index > REF_TO_STR.Length)
+        if (GBuiltInFunctions.IsValidFunctionIndex(value.Index))
         {
-            serializer.Serialize(writer, $"<unknown func {value.Index}>");
+            string[] aliases = GBuiltInFunctions.GetNamesByIndex(value.Index);
+            serializer.Serialize(writer, string.Join(" (is alias of) ", aliases));
         } else
         {
-            serializer.Serialize(writer, REF_TO_STR[value.Index]);
+            serializer.Serialize(writer, $"<unknown function index {value.Index}>");
         }
     }
 
