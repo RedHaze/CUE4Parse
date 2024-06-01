@@ -56,6 +56,13 @@ namespace CUE4Parse.UE4.Readers
             return Encoding.ASCII.GetString(ReadArray<byte>());
         }
 
+        public override T[] ReadArray<T>()
+        {
+            if (_read.TryGetValue(typeof(T), value: out var func))
+                return base.ReadArray(() => ((Func<FArchiveBigEndian, T>) func)(this));
+            return base.ReadArray<T>();
+        }
+
         public override T Read<T>()
         {
             if (_read.TryGetValue(typeof(T), value: out var func))

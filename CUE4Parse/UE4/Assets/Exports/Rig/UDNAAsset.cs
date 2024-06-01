@@ -1,14 +1,10 @@
 using System;
-using System.Buffers.Binary;
 using System.Linq;
-using System.Numerics;
-using System.Xml.Linq;
-using CUE4Parse.MappingsProvider.Usmap;
+using System.Linq.Expressions;
+using CUE4Parse.UE4.Assets.Exports.Animation.CurveExpression;
 using CUE4Parse.UE4.Assets.Readers;
-using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Readers;
-using CUE4Parse.UE4.Wwise.Objects;
-using Serilog.Core;
+using Newtonsoft.Json;
 
 namespace CUE4Parse.UE4.Assets.Exports.Rig
 {
@@ -131,11 +127,8 @@ namespace CUE4Parse.UE4.Assets.Exports.Rig
 
         public RawLODMapping(FArchiveBigEndian Ar)
         {
-            //archive.label("lods");
-            lods = Ar.ReadArray(Ar.Read<ushort>);
-
-            //archive.label("indices");
-            indices = Ar.ReadArray(() => (Ar.ReadArray(Ar.Read<ushort>)));
+            lods = Ar.ReadArray<ushort>();
+            indices = Ar.ReadArray(Ar.ReadArray<ushort>);
         }
 
     }
@@ -148,9 +141,9 @@ namespace CUE4Parse.UE4.Assets.Exports.Rig
 
         public RawVector3Vector(FArchiveBigEndian Ar)
         {
-            xs = Ar.ReadArray(Ar.Read<float>);
-            ys = Ar.ReadArray(Ar.Read<float>);
-            zs = Ar.ReadArray(Ar.Read<float>);
+            xs = Ar.ReadArray<float>();
+            ys = Ar.ReadArray<float>();
+            zs = Ar.ReadArray<float>();
         }
     }
 
@@ -195,7 +188,7 @@ namespace CUE4Parse.UE4.Assets.Exports.Rig
             animatedMapNames = Ar.ReadArray(Ar.ReadString);
             meshNames = Ar.ReadArray(Ar.ReadString);
             meshBlendShapeChannelMapping = new RawSurjectiveMapping<ushort, ushort>(Ar);
-            jointHierarchy = Ar.ReadArray(Ar.Read<ushort>);
+            jointHierarchy = Ar.ReadArray<ushort>();
             neutralJointTranslations = new RawVector3Vector(Ar);
             neutralJointRotations = new RawVector3Vector(Ar);
         }
@@ -212,12 +205,12 @@ namespace CUE4Parse.UE4.Assets.Exports.Rig
 
         public RawConditionalTable(FArchiveBigEndian Ar)
         {
-            inputIndices = Ar.ReadArray(Ar.Read<ushort>);
-            outputIndices = Ar.ReadArray(Ar.Read<ushort>);
-            fromValues = Ar.ReadArray(Ar.Read<float>);
-            toValues = Ar.ReadArray(Ar.Read<float>);
-            slopeValues = Ar.ReadArray(Ar.Read<float>);
-            cutValues = Ar.ReadArray(Ar.Read<float>);
+            inputIndices = Ar.ReadArray<ushort>();
+            outputIndices = Ar.ReadArray<ushort>();
+            fromValues = Ar.ReadArray<float>();
+            toValues = Ar.ReadArray<float>();
+            slopeValues = Ar.ReadArray<float>();
+            cutValues = Ar.ReadArray<float>();
         }
     }
 
@@ -229,9 +222,9 @@ namespace CUE4Parse.UE4.Assets.Exports.Rig
 
         public RawPSDMatrix(FArchiveBigEndian Ar)
         {
-            rows = Ar.ReadArray(Ar.Read<ushort>);
-            columns = Ar.ReadArray(Ar.Read<ushort>);
-            values = Ar.ReadArray(Ar.Read<float>);
+            rows = Ar.ReadArray<ushort>();
+            columns = Ar.ReadArray<ushort>();
+            values = Ar.ReadArray<float>();
         }
     }
 
@@ -259,11 +252,11 @@ namespace CUE4Parse.UE4.Assets.Exports.Rig
 
         public RawJointGroups(FArchiveBigEndian Ar)
         {
-            lods = Ar.ReadArray(Ar.Read<ushort>);
-            inputIndices = Ar.ReadArray(Ar.Read<ushort>);
-            outputIndices = Ar.ReadArray(Ar.Read<ushort>);
-            values = Ar.ReadArray(Ar.Read<float>);
-            jointInidices = Ar.ReadArray(Ar.Read<ushort>);
+            lods = Ar.ReadArray<ushort>();
+            inputIndices = Ar.ReadArray<ushort>();
+            outputIndices = Ar.ReadArray<ushort>();
+            values = Ar.ReadArray<float>();
+            jointInidices = Ar.ReadArray<ushort>();
         }
     }
 
@@ -289,9 +282,9 @@ namespace CUE4Parse.UE4.Assets.Exports.Rig
 
         public RawBlendShapeChannels(FArchiveBigEndian Ar)
         {
-            lods = Ar.ReadArray(Ar.Read<ushort>);
-            inputIndices = Ar.ReadArray(Ar.Read<ushort>);
-            outputIndices = Ar.ReadArray(Ar.Read<ushort>);
+            lods = Ar.ReadArray<ushort>();
+            inputIndices = Ar.ReadArray<ushort>();
+            outputIndices = Ar.ReadArray<ushort>();
         }
     }
 
@@ -302,7 +295,7 @@ namespace CUE4Parse.UE4.Assets.Exports.Rig
 
         public RawAnimatedMaps(FArchiveBigEndian Ar)
         {
-            lods = Ar.ReadArray(Ar.Read<ushort>);
+            lods = Ar.ReadArray<ushort>();
             conditionals = new RawConditionalTable(Ar);
         }
     }
@@ -401,6 +394,20 @@ namespace CUE4Parse.UE4.Assets.Exports.Rig
             {
                 DeserializeDNA(new FArchiveBigEndian(Ar));
             }
+        }
+
+        protected internal override void WriteJson(JsonWriter writer, JsonSerializer serializer)
+        {
+            base.WriteJson(writer, serializer);
+
+            writer.WritePropertyName(nameof(descriptor));
+            serializer.Serialize(writer, descriptor);
+
+            writer.WritePropertyName(nameof(definition));
+            serializer.Serialize(writer, definition);
+
+            writer.WritePropertyName(nameof(behavior));
+            serializer.Serialize(writer, behavior);
         }
     }
 }
