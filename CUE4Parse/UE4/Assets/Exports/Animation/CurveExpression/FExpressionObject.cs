@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CUE4Parse.UE4.Exceptions;
 using CUE4Parse.UE4.Objects.UObject;
@@ -47,6 +48,61 @@ public class FExpressionObject
                 }
             }
         }
+    }
+
+    public override string ToString()
+    {
+        List<string> items = new List<string>();
+        foreach (var element in Expression)
+        {
+            if (element.TryGet<EOperator>(out var op))
+            {
+                switch (op)
+                {
+                    case EOperator.Negate:
+                        items.Add("Op[Negate]");
+                        break;
+                    case EOperator.Add:
+                        items.Add("Op[Add]");
+                        break;
+                    case EOperator.Subtract:
+                        items.Add("Op[Subtract]");
+                        break;
+                    case EOperator.Multiply:
+                        items.Add("Op[Multiply]");
+                        break;
+                    case EOperator.Divide:
+                        items.Add("Op[Divide]");
+                        break;
+                    case EOperator.Modulo:
+                        items.Add("Op[Modulo]");
+                        break;
+                    case EOperator.Power:
+                        items.Add("Op[Power]");
+                        break;
+                    case EOperator.FloorDivide:
+                        items.Add("Op[FloorDivide]");
+                        break;
+                }
+            }
+            else if (element.TryGet<FName>(out var constant))
+            {
+                items.Add($"C[{constant}]");
+            }
+            else if (element.TryGet<FFunctionRef>(out var funcRef))
+            {
+                items.Add($"F[{funcRef.Index}]");
+            }
+            else if (element.TryGet<float>(out var value))
+            {
+                items.Add($"V[{value}]");
+            }
+            else
+            {
+                throw new NotImplementedException($"{element}: unimplemented expression operation");
+            }
+        }
+        return string.Join(" ", items);
     }
 }
 

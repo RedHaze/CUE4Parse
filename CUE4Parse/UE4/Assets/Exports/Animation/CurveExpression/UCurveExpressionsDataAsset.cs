@@ -41,7 +41,12 @@ public class UCurveExpressionsDataAsset : UObject
         foreach (var (name, expression) in ExpressionData.ExpressionMap)
         {
             writer.WritePropertyName(name.Text);
+            writer.WriteStartObject();
+            writer.WritePropertyName("Expanded");
             serializer.Serialize(writer, expression);
+            writer.WritePropertyName("Concise");
+            serializer.Serialize(writer, expression.ToString());
+            writer.WriteEndObject();
         }
         writer.WriteEndObject();
     }
